@@ -1,57 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, ScrollView, Image } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { Button } from "~/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "~/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
-import { Input } from "~/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue,
-} from "~/components/ui/select";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Stack from "expo-router/stack";
-import { usePlant } from "~/services/plants";
+import { usePlantInfo } from "~/services/plants";
 
 const PlantDetailsScreen = () => {
 	const { id } = useLocalSearchParams();
-	const [isEditing, setIsEditing] = useState(false);
+	const { data: plant } = usePlantInfo(id.toString());
 
-	const insets = useSafeAreaInsets();
-	const contentInsets = {
-		top: insets.top,
-		bottom: insets.bottom,
-		left: 12,
-		right: 12,
-	};
-
-	// Mock data - replace with actual data fetching logic
-	const { data } = usePlant(id.toString());
-
-	const handleEdit = () => {
-		setIsEditing(!isEditing);
-	};
-
-	const handleSave = () => {
-		// Implement save logic here
-		setIsEditing(false);
-	};
-
-	const handleWater = () => {
-		// Implement watering logic here
-		console.log("Plant watered");
-	};
+	if (!plant) {
+		return <Text>Loading...</Text>;
+	}
 
 	return (
 		<ScrollView className="flex-1 p-4">
@@ -67,16 +28,35 @@ const PlantDetailsScreen = () => {
 						source={{ uri: plant.image }}
 						style={{ width: 300, height: 300, borderRadius: 8 }}
 					/>
-					{isEditing ? (
-						<Input
-							value={plant.name}
-							onChangeText={(text) => setPlant({ ...plant, name: text })}
-							className="mt-4 font-bold text-2xl"
-						/>
-					) : (
-						<Text className="mt-4 font-bold text-2xl">{plant.name}</Text>
-					)}
-					<Text className="text-gray-500">{plant.scientificName}</Text>
+					<Text className="mt-4 font-bold text-2xl">{plant.commonName}</Text>
+					{plant.otherNames?.length ? (
+						<Text className="text-gray-500 italic">
+							aka {plant.otherNames.join(", ")}
+						</Text>
+					) : null}
+					<Text className="text-gray-500">
+						{plant.scientificNames.join(", ")}
+					</Text>
+				</CardContent>
+			</Card>
+
+			<Card className="mb-4">
+				<CardHeader>
+					<CardTitle>Plant Information</CardTitle>
+				</CardHeader>
+				<CardContent className="space-y-2">
+					<View className="flex-row justify-between">
+						<Text>Type:</Text>
+						<Text>{plant.type}</Text>
+					</View>
+					<View className="flex-row justify-between">
+						<Text>Cycle:</Text>
+						<Text>{plant.cycle}</Text>
+					</View>
+					<View className="flex-row justify-between">
+						<Text>Indoor:</Text>
+						<Text>{plant.indoor ? "Yes" : "No"}</Text>
+					</View>
 				</CardContent>
 			</Card>
 
@@ -85,112 +65,77 @@ const PlantDetailsScreen = () => {
 					<CardTitle>Care Instructions</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-2">
-					<View className="flex-row items-center">
-						{/* <Droplet className="mr-2" /> */}
-						{isEditing ? (
-							<Select
-								value={plant.wateringFrequency}
-								onValueChange={(value) =>
-									setPlant({ ...plant, wateringFrequency: value })
-								}
-							>
-								<SelectTrigger className="w-[250px]">
-									<SelectValue
-										className="text-foreground text-sm native:text-lg"
-										placeholder="Select watering frequency"
-									/>
-								</SelectTrigger>
-								<SelectContent insets={contentInsets} className="w-[250px]">
-									<SelectGroup>
-										<SelectLabel>Watering Frequency</SelectLabel>
-										<SelectItem value="Every 3 days" label="Every 3 days">
-											Every 3 days
-										</SelectItem>
-										<SelectItem value="Every 7 days" label="Every 7 days">
-											Every 7 days
-										</SelectItem>
-										<SelectItem value="Every 14 days" label="Every 14 days">
-											Every 14 days
-										</SelectItem>
-									</SelectGroup>
-								</SelectContent>
-							</Select>
-						) : (
-							<Text>Water: {plant.wateringFrequency}</Text>
-						)}
+					{plant.watering.frequency ? <View className="flex-row justify-between">
+						<Text>Watering Frequency:</Text>
+						<Text>{plant.watering.frequency}</Text>
+					</View> : null}
+					{plant.watering.benchmark ? (
+						<View className="flex-row justify-between">
+							<Text>Watering Benchmark:</Text>
+							<Text>{plant.watering.benchmark}</Text>
+						</View>
+					) : null}
+					<View className="flex-row justify-between">
+						<Text>Sunlight:</Text>
+						<Text>{plant.sunlight.join(", ")}</Text>
 					</View>
-					<View className="flex-row items-center">
-						{/* <Sun className="mr-2" /> */}
-						{isEditing ? (
-							<Input
-								value={plant.sunlightNeeds}
-								onChangeText={(text) =>
-									setPlant({ ...plant, sunlightNeeds: text })
-								}
-							/>
-						) : (
-							<Text>Sunlight: {plant.sunlightNeeds}</Text>
-						)}
+					<View className="flex-row justify-between">
+						<Text>Care Level:</Text>
+						<Text>{plant.care.level}</Text>
 					</View>
-					<View className="flex-row items-center">
-						{/* <Thermometer className="mr-2" /> */}
-						{isEditing ? (
-							<Input
-								value={plant.temperature}
-								onChangeText={(text) =>
-									setPlant({ ...plant, temperature: text })
-								}
-							/>
-						) : (
-							<Text>Temperature: {plant.temperature}</Text>
-						)}
+					<View className="flex-row justify-between">
+						<Text>Maintenance:</Text>
+						<Text>{plant.care.maintenance}</Text>
 					</View>
 				</CardContent>
 			</Card>
 
 			<Card className="mb-4">
 				<CardHeader>
-					<CardTitle>Watering Schedule</CardTitle>
+					<CardTitle>Plant Characteristics</CardTitle>
 				</CardHeader>
-				<CardContent>
-					<Text>Last Watered: {plant.lastWatered}</Text>
-					<Text>Next Watering: {plant.nextWatering}</Text>
+				<CardContent className="space-y-2">
+					<View className="flex-row justify-between">
+						<Text>Height:</Text>
+						{plant.dimensions.minHeight !== plant.dimensions.maxHeight ? (
+							<Text>{`${plant.dimensions.minHeight} - ${plant.dimensions.maxHeight} ${plant.dimensions.unit}`}</Text>
+						) : (
+							<Text>{`${plant.dimensions.minHeight} ${plant.dimensions.unit}`}</Text>
+						)}
+					</View>
+					<View className="flex-row justify-between">
+						<Text>Flowering:</Text>
+						<Text>
+							{plant.flowering.hasFlowers
+								? `Yes${plant.flowering.season ? ` (${plant.flowering.season})` : ""}`
+								: "No"}
+						</Text>
+					</View>
+					<View className="flex-row justify-between">
+						<Text>Hardiness:</Text>
+						{plant.hardiness.min !== plant.hardiness.max ? (
+							<Text>{`${plant.hardiness.min} - ${plant.hardiness.max}`}</Text>
+						) : (
+							<Text>{`${plant.hardiness.min}`}</Text>
+						)}
+					</View>
+					{plant.propagation?.length ? (
+						<View className="flex-col justify-between">
+							<Text>Propagation:</Text>
+							<Text>{plant.propagation.join(", ")}</Text>
+						</View>
+					) : null}
 				</CardContent>
-				<CardFooter>
-					<Button onPress={handleWater}>
-						<Text>Water Now</Text>
-					</Button>
-				</CardFooter>
 			</Card>
 
 			<Card className="mb-4">
 				<CardHeader>
-					<CardTitle>Notes</CardTitle>
+					<CardTitle>Description</CardTitle>
 				</CardHeader>
 				<CardContent>
-					{isEditing ? (
-						<Input
-							value={plant.notes}
-							onChangeText={(text) => setPlant({ ...plant, notes: text })}
-							multiline
-						/>
-					) : (
-						<Text>{plant.notes}</Text>
-					)}
+					<Text>{plant.description}</Text>
 				</CardContent>
 			</Card>
-
-			<View className="flex-row justify-between mt-4">
-				{isEditing ? (
-					<Button onPress={handleSave}>
-						<Text>Save Changes</Text>
-					</Button>
-				) : (
-					<Button onPress={handleEdit}>
-						<Text>Edit Plant</Text>
-					</Button>
-				)}
-			</View>
 		</ScrollView>
 	);
 };

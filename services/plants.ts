@@ -1,7 +1,7 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { useCallback } from "react";
 import { ApiClient } from "~/lib/api";
-import type { SearchResult } from "./types";
+import type { PlantInfo, SearchResult } from "./types";
 import useSWR from "swr";
 
 class PlantsService {
@@ -24,6 +24,10 @@ class PlantsService {
 			await this.apiClient.get<{ data: SearchResult[] }>(`/search?q=${query}`)
 		).data;
 	}
+
+	async getPlantInfo(id: string) {
+		return (await this.apiClient.get<{ data: PlantInfo }>(`/info/${id}`)).data;
+	}
 }
 
 export const usePlants = () => {
@@ -44,6 +48,16 @@ export const usePlant = (id: string) => {
 	}, [getToken, id]);
 
 	return useSWR(`/plants/${id}`, asyncFunction);
+};
+
+export const usePlantInfo = (id: string) => {
+	const { getToken } = useAuth();
+	const asyncFunction = useCallback(async () => {
+		const plantsService = new PlantsService(getToken);
+		return await plantsService.getPlantInfo(id);
+	}, [getToken, id]);
+
+	return useSWR(`/info/${id}`, asyncFunction);
 };
 
 export const useSearchResults = (query: string) => {
