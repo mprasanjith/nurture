@@ -5,6 +5,8 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardFooter } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { Input } from "~/components/ui/input";
+import Stack from "expo-router/stack";
+import { Plus } from "~/lib/icons/Plus";
 
 const PlantItem = ({ plant, onPress }) => (
 	<Card className="mb-4">
@@ -20,11 +22,11 @@ const PlantItem = ({ plant, onPress }) => (
 			</View>
 		</CardContent>
 		<CardFooter>
-			<Button variant="outline" onPress={onPress}>
-				<Link href="/plant-details">
+			<Link href="/plant-details" asChild>
+				<Button variant="outline" onPress={onPress}>
 					<Text>View Details</Text>
-				</Link>
-			</Button>
+				</Button>
+			</Link>
 		</CardFooter>
 	</Card>
 );
@@ -57,7 +59,20 @@ const PlantsListScreen = () => {
 
 	return (
 		<View className="flex-1 p-4">
-			<Text className="mb-4 font-bold text-2xl">My Plants</Text>
+			<Stack.Screen
+				options={{
+					title: "My plants",
+					headerRight: () => (
+						<Link href="/add-plant" asChild>
+							<Button size="sm" variant="ghost" className="flex-row items-center gap-2 p-0">
+								<Text>Add plant</Text>
+								<Plus />
+							</Button>
+						</Link>
+					)
+				}}
+			/>
+
 			<Input
 				placeholder="Search plants..."
 				value={searchQuery}
@@ -69,11 +84,6 @@ const PlantsListScreen = () => {
 				renderItem={({ item }) => <PlantItem plant={item} onPress={() => {}} />}
 				keyExtractor={(item) => item.id}
 			/>
-			<Button className="mt-4">
-				<Link href="/add-plant">
-					<Text>Add New Plant</Text>
-				</Link>
-			</Button>
 		</View>
 	);
 };

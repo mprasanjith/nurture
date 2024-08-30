@@ -45,16 +45,16 @@ const WelcomeScreen = () => {
 					</Text>
 				</CardContent>
 				<CardFooter className="flex flex-col justify-center items-stretch gap-4 w-full">
-					<Button className="w-full">
-						<Link href="/sign-up">
+					<Link href="/sign-up" asChild>
+						<Button className="w-full">
 							<Text>Get Started</Text>
-						</Link>
-					</Button>
-					<Button variant="outline" className="w-full">
-						<Link href="/sign-in">
+						</Button>
+					</Link>
+					<Link href="/sign-in" asChild>
+						<Button variant="outline" className="w-full">
 							<Text>I already have an account</Text>
-						</Link>
-					</Button>
+						</Button>
+					</Link>
 				</CardFooter>
 			</Card>
 		</View>

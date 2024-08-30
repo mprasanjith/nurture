@@ -21,6 +21,7 @@ import {
 	SelectValue,
 } from "~/components/ui/select";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Stack from "expo-router/stack";
 
 const PlantDetailsScreen = () => {
 	const router = useRouter();
@@ -65,6 +66,12 @@ const PlantDetailsScreen = () => {
 
 	return (
 		<ScrollView className="flex-1 p-4">
+			<Stack.Screen
+				options={{
+					title: "Plant details",
+				}}
+			/>
+
 			<Card className="mb-4">
 				<CardContent className="items-center p-4">
 					<Image
