@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { CameraView, type CameraType, useCameraPermissions } from "expo-camera";
 import Stack from "expo-router/stack";
 import { TouchableOpacity, View, Image } from "react-native";
@@ -7,6 +7,10 @@ import { Text } from "~/components/ui/text";
 import { ScanEye } from "~/lib/icons/ScanEye";
 import { SwitchCamera } from "~/lib/icons/SwitchCamera";
 import { Loader } from "~/lib/icons/Loader";
+import { PlantsService } from "~/services/plants";
+import { useAuth } from "@clerk/clerk-expo";
+import Toast from "react-native-root-toast";
+import { router } from "expo-router";
 
 const PlantCameraScreen = () => {
 	const [facing, setFacing] = useState<CameraType>("back");
@@ -14,6 +18,8 @@ const PlantCameraScreen = () => {
 	const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
 	const cameraRef = useRef<CameraView>(null);
+
+	const { getToken } = useAuth();
 
 	if (!permission) {
 		// Camera permissions are still loading.
@@ -38,11 +44,33 @@ const PlantCameraScreen = () => {
 		setFacing((current) => (current === "back" ? "front" : "back"));
 	}
 
+	async function identifyPlant(capturedImage: string) {
+		if (!capturedImage) {
+			return;
+		}
+
+		const service = new PlantsService(getToken);
+		const plant = await service.identifyPlant(capturedImage);
+
+		if (!plant) {
+			Toast.show("Failed to identify plant. Please try again.", {
+				duration: Toast.durations.LONG,
+			});
+			setCapturedImage(null);
+			return;
+		}
+
+		console.log("Identified plant:", plant);
+
+		router.push(`/plant-info/${plant}`);
+	}
+
 	async function captureImage() {
 		if (cameraRef.current) {
 			try {
 				const photo = await cameraRef.current.takePictureAsync();
 				setCapturedImage(photo.uri);
+				identifyPlant(photo.uri);
 			} catch (error) {
 				console.error("Failed to take picture:", error);
 			}

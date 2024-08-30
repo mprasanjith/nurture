@@ -54,6 +54,35 @@ export class ApiClient {
 		}
 	}
 
+	async formData<T>(endpoint: string, data: FormData): Promise<T> {
+		const token = await this.getAuthToken();
+		const url = this.baseUrl + endpoint;
+
+		const headers: HeadersInit = {};
+
+		if (token) {
+			headers["Authorization"] = `Bearer ${token}`;
+		}
+
+		const config: RequestInit = {
+			method: "POST",
+			headers,
+			body: data,
+		};
+
+		try {
+			const response = await fetch(url, config);
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.message || "An error occurred");
+			}
+			return await response.json();
+		} catch (error) {
+			console.error("API request failed:", error);
+			throw error;
+		}
+	}
+
 	async get<T>(endpoint: string): Promise<T> {
 		return this.request<T>(endpoint);
 	}

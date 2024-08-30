@@ -1,7 +1,7 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { useCallback } from "react";
 import { ApiClient } from "~/lib/api";
-import type { Plant, PlantInfo, SearchResult } from "./types";
+import type { Plant, PlantInfo, PlantPhotoMatch, SearchResult } from "./types";
 import useSWR, { mutate } from "swr";
 
 export class PlantsService {
@@ -39,6 +39,19 @@ export class PlantsService {
 
 	async getPlantInfo(id: string) {
 		return (await this.apiClient.get<{ data: PlantInfo }>(`/info/${id}`)).data;
+	}
+
+	async identifyPlant(image: string) {
+		const blob = await fetch(image).then((res) => res.blob());
+		const formData = new FormData();
+		formData.append("file", blob, "plant.jpg");
+
+		return (
+			await this.apiClient.formData<{ data: PlantPhotoMatch }>(
+				"/identify",
+				formData,
+			)
+		).data;
 	}
 }
 
