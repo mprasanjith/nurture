@@ -5,8 +5,8 @@ import { Stack } from "expo-router/stack";
 export default function Layout() {
 	const { isSignedIn } = useAuth();
 
-	if (isSignedIn) {
-		return <Redirect href={"/app"} />;
+	if (!isSignedIn) {
+		return <Redirect href={"/"} />;
 	}
 
 	return <Stack />;

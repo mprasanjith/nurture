@@ -9,6 +9,8 @@ import { Platform } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/hooks/useColorScheme";
 import "~/global.css";
+import { RootSiblingParent } from "react-native-root-siblings";
+import { PortalHost } from "@rn-primitives/portal";
 
 const LIGHT_THEME: Theme = {
 	dark: false,
@@ -58,11 +60,13 @@ export default function RootLayout() {
 	React.useEffect(() => {
 		(async () => {
 			const theme = await AsyncStorage.getItem("theme");
+
 			if (Platform.OS === "web") {
 				// Adds the background color to the html element to prevent white background on overscroll.
 				document.documentElement.classList.add("bg-background");
 			}
 			if (!theme) {
+				console.log("No theme found in AsyncStorage", colorScheme);
 				AsyncStorage.setItem("theme", colorScheme);
 				setIsColorSchemeLoaded(true);
 				return;
@@ -85,14 +89,18 @@ export default function RootLayout() {
 	}
 
 	return (
-		<ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-			<StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-			<ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
-				<ClerkLoaded>
-					<Slot />
-				</ClerkLoaded>
-			</ClerkProvider>
-		</ThemeProvider>
+		<RootSiblingParent>
+			<ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+				<StatusBar style={isDarkColorScheme ? "light" : "dark"} />
+				<ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+					<ClerkLoaded>
+						<Slot />
+					</ClerkLoaded>
+				</ClerkProvider>
+			</ThemeProvider>
+
+			<PortalHost />
+		</RootSiblingParent>
 	);
 }
 
