@@ -3,60 +3,51 @@ import { View, ScrollView, Image } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
+import { Button } from "~/components/ui/button";
 import Stack from "expo-router/stack";
-import { usePlantInfo } from "~/services/plants";
+import { usePlant } from "~/services/plants";
 
-const PlantDetailsScreen = () => {
+const PlantCareScreen = () => {
 	const { id } = useLocalSearchParams();
-	const { data: plant } = usePlantInfo(id.toString());
+	const { data: plant, isLoading, error } = usePlant(id.toString());
 
-	if (!plant) {
+	if (isLoading) {
 		return <Text>Loading...</Text>;
 	}
+
+	if (error) {
+		return <Text>Error loading plant</Text>;
+	}
+
+	const formatDate = (dateString: string) => {
+		return new Date(dateString).toLocaleDateString();
+	};
+
+	const getNextReminder = () => {
+		if (plant.reminders.length === 0) return null;
+		return plant.reminders.reduce((closest, current) =>
+			new Date(current.nextDue) < new Date(closest.nextDue) ? current : closest,
+		);
+	};
+
+	const nextReminder = getNextReminder();
 
 	return (
 		<ScrollView className="flex-1 p-4">
 			<Stack.Screen
 				options={{
-					title: "Plant details",
+					title: "Plant care",
 				}}
 			/>
 
 			<Card className="mb-4">
 				<CardContent className="items-center p-4">
 					<Image
-						source={{ uri: plant.image }}
-						style={{ width: 300, height: 300, borderRadius: 8 }}
+						source={{ uri: plant.info?.thumbnail }}
+						style={{ width: 150, height: 150, borderRadius: 75 }}
 					/>
-					<Text className="mt-4 font-bold text-2xl">{plant.commonName}</Text>
-					{plant.otherNames?.length ? (
-						<Text className="text-gray-500 italic">
-							aka {plant.otherNames.join(", ")}
-						</Text>
-					) : null}
-					<Text className="text-gray-500">
-						{plant.scientificNames.join(", ")}
-					</Text>
-				</CardContent>
-			</Card>
-
-			<Card className="mb-4">
-				<CardHeader>
-					<CardTitle>Plant Information</CardTitle>
-				</CardHeader>
-				<CardContent className="space-y-2">
-					<View className="flex-row justify-between">
-						<Text>Type:</Text>
-						<Text>{plant.type}</Text>
-					</View>
-					<View className="flex-row justify-between">
-						<Text>Cycle:</Text>
-						<Text>{plant.cycle}</Text>
-					</View>
-					<View className="flex-row justify-between">
-						<Text>Indoor:</Text>
-						<Text>{plant.indoor ? "Yes" : "No"}</Text>
-					</View>
+					<Text className="mt-4 font-bold text-2xl">{plant.name}</Text>
+					<Text className="text-gray-500">{plant.info?.commonName}</Text>
 				</CardContent>
 			</Card>
 
@@ -65,79 +56,59 @@ const PlantDetailsScreen = () => {
 					<CardTitle>Care Instructions</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-2">
-					{plant.watering.frequency ? <View className="flex-row justify-between">
-						<Text>Watering Frequency:</Text>
-						<Text>{plant.watering.frequency}</Text>
-					</View> : null}
-					{plant.watering.benchmark ? (
-						<View className="flex-row justify-between">
-							<Text>Watering Benchmark:</Text>
-							<Text>{plant.watering.benchmark}</Text>
-						</View>
-					) : null}
+					<View className="flex-row justify-between">
+						<Text>Watering:</Text>
+						<Text>{plant.info?.watering.frequency}</Text>
+					</View>
 					<View className="flex-row justify-between">
 						<Text>Sunlight:</Text>
-						<Text>{plant.sunlight.join(", ")}</Text>
+						<Text>{plant.info?.sunlight.join(", ")}</Text>
 					</View>
 					<View className="flex-row justify-between">
 						<Text>Care Level:</Text>
-						<Text>{plant.care.level}</Text>
+						<Text>{plant.info?.care.level}</Text>
 					</View>
 					<View className="flex-row justify-between">
 						<Text>Maintenance:</Text>
-						<Text>{plant.care.maintenance}</Text>
+						<Text>{plant.info?.care.maintenance}</Text>
 					</View>
 				</CardContent>
 			</Card>
 
 			<Card className="mb-4">
 				<CardHeader>
-					<CardTitle>Plant Characteristics</CardTitle>
+					<CardTitle>Reminders</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-2">
-					<View className="flex-row justify-between">
-						<Text>Height:</Text>
-						{plant.dimensions.minHeight !== plant.dimensions.maxHeight ? (
-							<Text>{`${plant.dimensions.minHeight} - ${plant.dimensions.maxHeight} ${plant.dimensions.unit}`}</Text>
-						) : (
-							<Text>{`${plant.dimensions.minHeight} ${plant.dimensions.unit}`}</Text>
-						)}
-					</View>
-					<View className="flex-row justify-between">
-						<Text>Flowering:</Text>
-						<Text>
-							{plant.flowering.hasFlowers
-								? `Yes${plant.flowering.season ? ` (${plant.flowering.season})` : ""}`
-								: "No"}
-						</Text>
-					</View>
-					<View className="flex-row justify-between">
-						<Text>Hardiness:</Text>
-						{plant.hardiness.min !== plant.hardiness.max ? (
-							<Text>{`${plant.hardiness.min} - ${plant.hardiness.max}`}</Text>
-						) : (
-							<Text>{`${plant.hardiness.min}`}</Text>
-						)}
-					</View>
-					{plant.propagation?.length ? (
-						<View className="flex-col justify-between">
-							<Text>Propagation:</Text>
-							<Text>{plant.propagation.join(", ")}</Text>
-						</View>
-					) : null}
+					{nextReminder ? (
+						<>
+							<Text>Next reminder: {nextReminder.type}</Text>
+							<Text>Due on: {formatDate(nextReminder.nextDue)}</Text>
+							<Button onPress={() => console.log("Mark as completed")}>
+								Mark as Completed
+							</Button>
+						</>
+					) : (
+						<Text>No upcoming reminders</Text>
+					)}
 				</CardContent>
 			</Card>
 
 			<Card className="mb-4">
 				<CardHeader>
-					<CardTitle>Description</CardTitle>
+					<CardTitle>Reminder History</CardTitle>
 				</CardHeader>
-				<CardContent>
-					<Text>{plant.description}</Text>
+				<CardContent className="space-y-2">
+					{plant.reminders.map((reminder) => (
+						<View key={reminder._id} className="flex-row justify-between">
+							<Text>{reminder.type}</Text>
+							<Text>Last done: {formatDate(reminder.lastCompleted)}</Text>
+						</View>
+					))}
 				</CardContent>
 			</Card>
 		</ScrollView>
 	);
 };
 
-export default PlantDetailsScreen;
+export default PlantCareScreen;

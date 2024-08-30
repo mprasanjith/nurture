@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, FlatList, Image } from "react-native";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardFooter } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
@@ -17,38 +17,37 @@ interface PlantSearchResultProps {
 }
 
 const PlantSearchResult = ({ plant }: PlantSearchResultProps) => (
-	<Card className="mb-4">
-		<CardContent className="flex-row p-4">
-			<Image
-				source={{ uri: plant.thumbnail || "/api/placeholder/80/80" }}
-				style={{ width: 80, height: 80, borderRadius: 8, marginRight: 16 }}
-			/>
-			<View className="flex-1">
-				<Text className="font-bold text-lg">{plant.commonName}</Text>
-				<Text className="text-gray-500 text-sm">
-					{plant.scientificNames?.length > 0 && (
-						<>
-							<Text>Scientific name: </Text>
+	<Link href={`/plant-info/${plant.id}`} asChild>
+		<Card className="mb-4">
+			<CardContent className="flex-row p-4">
+				<Image
+					source={{ uri: plant.thumbnail || "/api/placeholder/80/80" }}
+					style={{ width: 80, height: 80, borderRadius: 8, marginRight: 16 }}
+				/>
+				<View className="flex-1">
+					<Text className="font-bold text-lg">{plant.commonName}</Text>
+					<Text className="text-gray-500 text-sm">
+						{plant.scientificNames?.length > 0 && (
 							<Text className="text-gray-500 text-sm">
 								{plant.scientificNames.join(", ")}
 							</Text>
-						</>
-					)}
-				</Text>
+						)}
+					</Text>
 
-				<Text className="text-gray-500 text-sm">
-					{plant.otherNames?.length > 0 && (
-						<>
-							<Text>Also known as: </Text>
-							<Text className="text-gray-500 text-sm">
-								{plant.otherNames.join(", ")}
-							</Text>
-						</>
-					)}
-				</Text>
-			</View>
-		</CardContent>
-	</Card>
+					<Text className="text-gray-500 text-sm">
+						{plant.otherNames?.length > 0 && (
+							<>
+								<Text>Also known as: </Text>
+								<Text className="text-gray-500 text-sm">
+									{plant.otherNames.join(", ")}
+								</Text>
+							</>
+						)}
+					</Text>
+				</View>
+			</CardContent>
+		</Card>
+	</Link>
 );
 
 const AddPlantScreen = () => {
@@ -65,8 +64,6 @@ const AddPlantScreen = () => {
 	const handlePlantSelect = (plant) => {
 		console.log("Selected plant:", plant.id);
 	};
-
-	console.log("Search results:", searchResults);
 
 	return (
 		<View className="flex-1 p-4">
@@ -97,10 +94,10 @@ const AddPlantScreen = () => {
 				renderItem={({ item }) => (
 					<PlantSearchResult plant={item} onSelect={handlePlantSelect} />
 				)}
-				keyExtractor={(item) => item.id}
+				keyExtractor={(item) => item.id.toString()}
 				ListEmptyComponent={
 					<Text className="mt-4 text-center text-gray-500">
-						{searchQuery && !isLoading && searchResults.length === 0
+						{searchQuery && !isLoading && searchResults?.length === 0
 							? "No plants found. Try a different search or use the camera to identify your plant."
 							: "Search for a plant or use the camera to identify it."}
 					</Text>

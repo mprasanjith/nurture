@@ -1,10 +1,10 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { useCallback } from "react";
 import { ApiClient } from "~/lib/api";
-import type { PlantInfo, SearchResult } from "./types";
-import useSWR from "swr";
+import type { Plant, PlantInfo, SearchResult } from "./types";
+import useSWR, { mutate } from "swr";
 
-class PlantsService {
+export class PlantsService {
 	apiClient: ApiClient;
 
 	constructor(getApiToken: () => Promise<string | null>) {
@@ -12,11 +12,23 @@ class PlantsService {
 	}
 
 	async getPlants() {
-		return (await this.apiClient.get<{ data: any[] }>("/plants")).data;
+		return (await this.apiClient.get<{ data: Plant[] }>("/plants")).data;
 	}
 
 	async getPlant(id: string) {
-		return (await this.apiClient.get<{ data: any }>(`/plants/${id}`)).data;
+		return (await this.apiClient.get<{ data: Plant }>(`/plants/${id}`)).data;
+	}
+
+	async addPlant(id: string) {
+		return (
+			await this.apiClient.post<{ data: Plant }, { id: string }>("/plants", {
+				id,
+			})
+		).data;
+	}
+
+	async removePlant(id: string) {
+		return (await this.apiClient.delete<{ data: Plant }>(`/plants/${id}`)).data;
 	}
 
 	async getSearchResults(query: string) {
