@@ -80,14 +80,17 @@ const AddPlantScreen = () => {
 					onChangeText={setSearchQuery}
 					className="flex-1"
 				/>
-				<Button
-					variant="outline"
-					className="flex-row items-center gap-2"
-					onPress={handleCameraPress}
-				>
-					<ScanEye className="text-foreground" />
-					<Text>Identify</Text>
-				</Button>
+
+				<Link href="/plant-camera" asChild>
+					<Button
+						variant="outline"
+						className="flex-row items-center gap-2"
+						onPress={handleCameraPress}
+					>
+						<ScanEye className="text-foreground" />
+						<Text>Identify</Text>
+					</Button>
+				</Link>
 			</View>
 			<FlatList
 				data={searchResults}
