@@ -13,7 +13,6 @@ import type { SearchResult } from "~/services/types";
 
 interface PlantSearchResultProps {
 	plant: SearchResult;
-	onSelect: (plant: SearchResult) => void;
 }
 
 const PlantSearchResult = ({ plant }: PlantSearchResultProps) => (
@@ -55,16 +54,6 @@ const AddPlantScreen = () => {
 	const debouncedSearchQuery = useDebounce(searchQuery, 300);
 	const { data: searchResults, isLoading } =
 		useSearchResults(debouncedSearchQuery);
-
-	const handleCameraPress = () => {
-		// You'll implement the camera functionality here
-		console.log("Open camera for plant identification");
-	};
-
-	const handlePlantSelect = (plant) => {
-		console.log("Selected plant:", plant.id);
-	};
-
 	return (
 		<View className="flex-1 p-4">
 			<Stack.Screen
@@ -82,11 +71,7 @@ const AddPlantScreen = () => {
 				/>
 
 				<Link href="/plant-camera" asChild>
-					<Button
-						variant="outline"
-						className="flex-row items-center gap-2"
-						onPress={handleCameraPress}
-					>
+					<Button variant="outline" className="flex-row items-center gap-2">
 						<ScanEye className="text-foreground" />
 						<Text>Identify</Text>
 					</Button>
@@ -94,9 +79,7 @@ const AddPlantScreen = () => {
 			</View>
 			<FlatList
 				data={searchResults}
-				renderItem={({ item }) => (
-					<PlantSearchResult plant={item} onSelect={handlePlantSelect} />
-				)}
+				renderItem={({ item }) => <PlantSearchResult plant={item} />}
 				keyExtractor={(item) => item.id.toString()}
 				ListEmptyComponent={
 					<Text className="mt-4 text-center text-gray-500">

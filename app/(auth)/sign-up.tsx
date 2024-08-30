@@ -47,7 +47,6 @@ const SignupScreen = () => {
 
 			setPendingVerification(true);
 		} catch (err) {
-			console.log("Signup failed", JSON.stringify(err, null, 2));
 			Toast.show("Something went wrong, please try again.", {
 				duration: Toast.durations.LONG,
 			});

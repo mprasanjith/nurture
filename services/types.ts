@@ -68,29 +68,3 @@ export interface PlantInfo {
 	thumbnail: string;
 	image: string;
 }
-
-export interface PlantPhotoMatch {
-	score: number;
-	species: {
-		scientificNameWithoutAuthor: string;
-		scientificNameAuthorship: string;
-		genus: {
-			scientificNameWithoutAuthor: string;
-			scientificNameAuthorship: string;
-			scientificName: string;
-		};
-		family: {
-			scientificNameWithoutAuthor: string;
-			scientificNameAuthorship: string;
-			scientificName: string;
-		};
-		commonNames: string[];
-		scientificName: string;
-	};
-	gbif: {
-		id: string;
-	};
-	powo: {
-		id: string;
-	};
-}

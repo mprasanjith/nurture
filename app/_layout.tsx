@@ -41,7 +41,6 @@ export default function RootLayout() {
 				document.documentElement.classList.add("bg-background");
 			}
 			if (!theme) {
-				console.log("No theme found in AsyncStorage", colorScheme);
 				AsyncStorage.setItem("theme", colorScheme);
 				setIsColorSchemeLoaded(true);
 				return;

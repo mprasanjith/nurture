@@ -22,8 +22,6 @@ const LoginScreen = () => {
 				password,
 			});
 
-			console.log(signInAttempt);
-
 			if (signInAttempt.status === "complete") {
 				await setActive({ session: signInAttempt.createdSessionId });
 				router.replace("/app");

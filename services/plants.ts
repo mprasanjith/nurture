@@ -47,7 +47,7 @@ export class PlantsService {
 		formData.append("file", blob, "plant.jpg");
 
 		return (
-			await this.apiClient.formData<{ data: PlantPhotoMatch }>(
+			await this.apiClient.formData<{ data: SearchResult }>(
 				"/identify",
 				formData,
 			)

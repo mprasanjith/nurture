@@ -49,20 +49,17 @@ const PlantCameraScreen = () => {
 			return;
 		}
 
-		const service = new PlantsService(getToken);
-		const plant = await service.identifyPlant(capturedImage);
-
-		if (!plant) {
+		try {
+			const service = new PlantsService(getToken);
+			const plant = await service.identifyPlant(capturedImage);
+			router.replace(`/plant-info/${plant.id}`);
+		} catch (error) {
+			console.error("Failed to identify plant:", error);
 			Toast.show("Failed to identify plant. Please try again.", {
 				duration: Toast.durations.LONG,
 			});
 			setCapturedImage(null);
-			return;
 		}
-
-		console.log("Identified plant:", plant);
-
-		router.push(`/plant-info/${plant}`);
 	}
 
 	async function captureImage() {
