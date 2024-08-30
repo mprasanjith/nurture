@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { ApiClient } from "~/lib/api";
 import type { SearchResult } from "./types";
 import useSWR from "swr";

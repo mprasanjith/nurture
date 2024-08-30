@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, ScrollView, Image } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { Button } from "~/components/ui/button";
 import {
 	Card,
@@ -22,10 +22,10 @@ import {
 } from "~/components/ui/select";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Stack from "expo-router/stack";
+import { usePlant } from "~/services/plants";
 
 const PlantDetailsScreen = () => {
-	const router = useRouter();
-	const { plantId } = useLocalSearchParams();
+	const { id } = useLocalSearchParams();
 	const [isEditing, setIsEditing] = useState(false);
 
 	const insets = useSafeAreaInsets();
@@ -37,18 +37,7 @@ const PlantDetailsScreen = () => {
 	};
 
 	// Mock data - replace with actual data fetching logic
-	const [plant, setPlant] = useState({
-		id: plantId,
-		name: "Monstera",
-		scientificName: "Monstera deliciosa",
-		image: "/api/placeholder/300/300",
-		wateringFrequency: "Every 7 days",
-		sunlightNeeds: "Bright indirect light",
-		temperature: "65-80°F",
-		lastWatered: "2023-08-25",
-		nextWatering: "2023-09-01",
-		notes: "Likes high humidity. Mist leaves occasionally.",
-	});
+	const { data } = usePlant(id.toString());
 
 	const handleEdit = () => {
 		setIsEditing(!isEditing);

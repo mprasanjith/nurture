@@ -16,22 +16,36 @@ interface PlantSearchResultProps {
 	onSelect: (plant: SearchResult) => void;
 }
 
-const PlantSearchResult = ({ plant, onSelect }: PlantSearchResultProps) => (
+const PlantSearchResult = ({ plant }: PlantSearchResultProps) => (
 	<Card className="mb-4">
-		<CardContent className="flex-col gap-2 p-4">
-			<Text className="font-bold text-lg">
-				{plant.scientificNameWithoutAuthor}
-			</Text>
+		<CardContent className="flex-row p-4">
+			<Image
+				source={{ uri: plant.thumbnail || "/api/placeholder/80/80" }}
+				style={{ width: 80, height: 80, borderRadius: 8, marginRight: 16 }}
+			/>
+			<View className="flex-1">
+				<Text className="font-bold text-lg">{plant.commonName}</Text>
+				<Text className="text-gray-500 text-sm">
+					{plant.scientificNames?.length > 0 && (
+						<>
+							<Text>Scientific name: </Text>
+							<Text className="text-gray-500 text-sm">
+								{plant.scientificNames.join(", ")}
+							</Text>
+						</>
+					)}
+				</Text>
 
-			<View>
-				{plant.commonNames?.length > 0 && (
-					<>
-						<Text>Also known as:</Text>
-						<Text className="text-gray-500 text-sm">
-							{plant.commonNames.join(", ")}
-						</Text>
-					</>
-				)}
+				<Text className="text-gray-500 text-sm">
+					{plant.otherNames?.length > 0 && (
+						<>
+							<Text>Also known as: </Text>
+							<Text className="text-gray-500 text-sm">
+								{plant.otherNames.join(", ")}
+							</Text>
+						</>
+					)}
+				</Text>
 			</View>
 		</CardContent>
 	</Card>
@@ -86,7 +100,7 @@ const AddPlantScreen = () => {
 				keyExtractor={(item) => item.id}
 				ListEmptyComponent={
 					<Text className="mt-4 text-center text-gray-500">
-						{!isLoading && searchResults.length === 0
+						{searchQuery && !isLoading && searchResults.length === 0
 							? "No plants found. Try a different search or use the camera to identify your plant."
 							: "Search for a plant or use the camera to identify it."}
 					</Text>

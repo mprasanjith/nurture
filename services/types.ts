@@ -1,7 +1,9 @@
 export interface SearchResult {
-	id: string;
-    commonNames?: string[];
-	scientificNameWithoutAuthor: string;
+	id: number;
+	commonName: string;
+	scientificNames: string[];
+	otherNames: string[];
+	thumbnail: string;
 }
 
 export interface PlantPhotoMatch {
