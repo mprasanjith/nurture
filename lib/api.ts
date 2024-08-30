@@ -1,9 +1,9 @@
-if (process.env.API_BASE_URL) {
+if (!process.env.EXPO_PUBLIC_API_BASE_URL) {
 	throw new Error(
-		"Missing API_BASE_URL environment variable. Please set it in your .env file.",
+		"Missing EXPO_PUBLIC_API_BASE_URL environment variable. Please set it in your .env file.",
 	);
 }
-const API_BASE_URL = process.env.API_BASE_URL;
+const EXPO_PUBLIC_API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -12,7 +12,7 @@ export class ApiClient {
 	private getAuthToken: () => Promise<string | null>;
 
 	constructor(getAuthToken: () => Promise<string | null>) {
-		this.baseUrl = API_BASE_URL;
+		this.baseUrl = EXPO_PUBLIC_API_BASE_URL;
 		this.getAuthToken = getAuthToken;
 	}
 
@@ -43,12 +43,10 @@ export class ApiClient {
 
 		try {
 			const response = await fetch(url, config);
-
 			if (!response.ok) {
 				const errorData = await response.json();
 				throw new Error(errorData.message || "An error occurred");
 			}
-
 			return await response.json();
 		} catch (error) {
 			console.error("API request failed:", error);

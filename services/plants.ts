@@ -1,13 +1,8 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ApiClient } from "~/lib/api";
-
-interface Plant {
-	id: string;
-	name: string;
-	scientificName: string;
-	image: string;
-}
+import type { SearchResult } from "./types";
+import useSWR from "swr";
 
 class PlantsService {
 	apiClient: ApiClient;
@@ -17,46 +12,50 @@ class PlantsService {
 	}
 
 	async getPlants() {
-		return await this.apiClient.get<Plant[]>("/plants");
+		return (await this.apiClient.get<{ data: any[] }>("/plants")).data;
 	}
 
 	async getPlant(id: string) {
-		return await this.apiClient.get<Plant>(`/plants/${id}`);
+		return (await this.apiClient.get<{ data: any }>(`/plants/${id}`)).data;
+	}
+
+	async getSearchResults(query: string) {
+		return (
+			await this.apiClient.get<{ data: SearchResult[] }>(`/search?q=${query}`)
+		).data;
 	}
 }
 
 export const usePlants = () => {
-	const [plants, setPlants] = useState([]);
 	const { getToken } = useAuth();
-
-	useEffect(() => {
-		const getPlants = async () => {
-			const plantsService = new PlantsService(getToken);
-			const plants = await plantsService.getPlants();
-			setPlants(plants);
-		};
-
-		getPlants();
+	const asyncFunction = useCallback(async () => {
+		const plantsService = new PlantsService(getToken);
+		return await plantsService.getPlants();
 	}, [getToken]);
 
-	return plants;
+	return useSWR("/plants", asyncFunction);
 };
 
 export const usePlant = (id: string) => {
-	const [plant, setPlant] = useState<Plant | null>(null);
 	const { getToken } = useAuth();
-
-	useEffect(() => {
-		const getPlant = async () => {
-			const plantsService = new PlantsService(getToken);
-			const plant = await plantsService.getPlant(id);
-			setPlant(plant);
-		};
-
-		getPlant();
+	const asyncFunction = useCallback(async () => {
+		const plantsService = new PlantsService(getToken);
+		return await plantsService.getPlant(id);
 	}, [getToken, id]);
 
-	return {
-		plant,
-	};
+	return useSWR(`/plants/${id}`, asyncFunction);
+};
+
+export const useSearchResults = (query: string) => {
+	const { getToken } = useAuth();
+	const asyncFunction = useCallback(async () => {
+		if (query.length < 3) {
+			return [];
+		}
+
+		const searchResultsService = new PlantsService(getToken);
+		return await searchResultsService.getSearchResults(query);
+	}, [getToken, query]);
+
+	return useSWR(`/search?q=${query}`, asyncFunction);
 };

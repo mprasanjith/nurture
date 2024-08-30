@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { View, FlatList, Image } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Button } from "~/components/ui/button";
@@ -7,6 +7,7 @@ import { Text } from "~/components/ui/text";
 import { Input } from "~/components/ui/input";
 import Stack from "expo-router/stack";
 import { Plus } from "~/lib/icons/Plus";
+import { usePlants } from "~/services/plants";
 
 const PlantItem = ({ plant, onPress }) => (
 	<Card className="mb-4">
@@ -32,29 +33,20 @@ const PlantItem = ({ plant, onPress }) => (
 );
 
 const PlantsListScreen = () => {
-	const [plants, setPlants] = useState([
-		{
-			id: "1",
-			name: "Monstera",
-			species: "Monstera deliciosa",
-			nextWater: "2 days",
-			image: "/api/placeholder/100/100",
-		},
-		{
-			id: "2",
-			name: "Snake Plant",
-			species: "Sansevieria trifasciata",
-			nextWater: "Today",
-			image: "/api/placeholder/100/100",
-		},
-	]);
+	const { data } = usePlants();
 
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const filteredPlants = plants.filter(
-		(plant) =>
-			plant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			plant.species.toLowerCase().includes(searchQuery.toLowerCase()),
+	const filteredPlants = useMemo(
+		() =>
+			data?.filter(
+				(plant) =>
+					plant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+					plant.scientificName
+						.toLowerCase()
+						.includes(searchQuery.toLowerCase()),
+			),
+		[data, searchQuery],
 	);
 
 	return (
@@ -64,12 +56,16 @@ const PlantsListScreen = () => {
 					title: "My plants",
 					headerRight: () => (
 						<Link href="/add-plant" asChild>
-							<Button size="sm" variant="ghost" className="flex-row items-center gap-2 p-0">
+							<Button
+								size="sm"
+								variant="ghost"
+								className="flex-row items-center gap-2 p-0"
+							>
 								<Text>Add plant</Text>
 								<Plus />
 							</Button>
 						</Link>
-					)
+					),
 				}}
 			/>
 

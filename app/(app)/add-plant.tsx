@@ -7,59 +7,41 @@ import { Text } from "~/components/ui/text";
 import { Input } from "~/components/ui/input";
 import Stack from "expo-router/stack";
 import { ScanEye } from "~/lib/icons/ScanEye";
+import { useSearchResults } from "~/services/plants";
+import { useDebounce } from "~/hooks/useDebounce";
+import type { SearchResult } from "~/services/types";
 
-const PlantSearchResult = ({ plant, onSelect }) => (
+interface PlantSearchResultProps {
+	plant: SearchResult;
+	onSelect: (plant: SearchResult) => void;
+}
+
+const PlantSearchResult = ({ plant, onSelect }: PlantSearchResultProps) => (
 	<Card className="mb-4">
-		<CardContent className="flex-row p-4">
-			<Image
-				source={{ uri: plant.image || "/api/placeholder/80/80" }}
-				style={{ width: 80, height: 80, borderRadius: 8, marginRight: 16 }}
-			/>
-			<View className="flex-1">
-				<Text className="font-bold text-lg">{plant.name}</Text>
-				<Text className="text-gray-500 text-sm">{plant.scientificName}</Text>
+		<CardContent className="flex-col gap-2 p-4">
+			<Text className="font-bold text-lg">
+				{plant.scientificNameWithoutAuthor}
+			</Text>
+
+			<View>
+				{plant.commonNames?.length > 0 && (
+					<>
+						<Text>Also known as:</Text>
+						<Text className="text-gray-500 text-sm">
+							{plant.commonNames.join(", ")}
+						</Text>
+					</>
+				)}
 			</View>
 		</CardContent>
-		<CardFooter>
-			<Button onPress={() => onSelect(plant)}>
-				<Text>Select</Text>
-			</Button>
-		</CardFooter>
 	</Card>
 );
 
 const AddPlantScreen = () => {
-	const router = useRouter();
 	const [searchQuery, setSearchQuery] = useState("");
-	const [searchResults, setSearchResults] = useState([]);
-
-	const handleSearch = (query) => {
-		setSearchQuery(query);
-		// Here you would typically make an API call to search for plants
-		// For now, we'll use some mock data
-		const mockResults = [
-			{
-				id: "1",
-				name: "Monstera",
-				scientificName: "Monstera deliciosa",
-				image: "/api/placeholder/80/80",
-			},
-			{
-				id: "2",
-				name: "Snake Plant",
-				scientificName: "Sansevieria trifasciata",
-				image: "/api/placeholder/80/80",
-			},
-			// Add more mock data as needed
-		];
-		setSearchResults(
-			mockResults.filter(
-				(plant) =>
-					plant.name.toLowerCase().includes(query.toLowerCase()) ||
-					plant.scientificName.toLowerCase().includes(query.toLowerCase()),
-			),
-		);
-	};
+	const debouncedSearchQuery = useDebounce(searchQuery, 300);
+	const { data: searchResults, isLoading } =
+		useSearchResults(debouncedSearchQuery);
 
 	const handleCameraPress = () => {
 		// You'll implement the camera functionality here
@@ -67,12 +49,10 @@ const AddPlantScreen = () => {
 	};
 
 	const handlePlantSelect = (plant) => {
-		// Navigate to a screen to add details for the selected plant
-		router.push({
-			pathname: "/add-plant-details",
-			params: { plantId: plant.id },
-		});
+		console.log("Selected plant:", plant.id);
 	};
+
+	console.log("Search results:", searchResults);
 
 	return (
 		<View className="flex-1 p-4">
@@ -86,7 +66,7 @@ const AddPlantScreen = () => {
 				<Input
 					placeholder="Search for a plant..."
 					value={searchQuery}
-					onChangeText={handleSearch}
+					onChangeText={setSearchQuery}
 					className="flex-1"
 				/>
 				<Button
@@ -106,7 +86,7 @@ const AddPlantScreen = () => {
 				keyExtractor={(item) => item.id}
 				ListEmptyComponent={
 					<Text className="mt-4 text-center text-gray-500">
-						{searchQuery
+						{!isLoading && searchResults.length === 0
 							? "No plants found. Try a different search or use the camera to identify your plant."
 							: "Search for a plant or use the camera to identify it."}
 					</Text>

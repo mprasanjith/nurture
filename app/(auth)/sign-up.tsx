@@ -46,7 +46,7 @@ const SignupScreen = () => {
 			await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
 			setPendingVerification(true);
-		} catch (err: any) {
+		} catch (err) {
 			console.log("Signup failed", JSON.stringify(err, null, 2));
 			Toast.show("Something went wrong, please try again.", {
 				duration: Toast.durations.LONG,
@@ -70,7 +70,7 @@ const SignupScreen = () => {
 			} else {
 				console.error(JSON.stringify(completeSignUp, null, 2));
 			}
-		} catch (err: any) {
+		} catch (err) {
 			// See https://clerk.com/docs/custom-flows/error-handling
 			// for more info on error handling
 			console.error(JSON.stringify(err, null, 2));

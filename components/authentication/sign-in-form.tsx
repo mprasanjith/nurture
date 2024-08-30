@@ -10,7 +10,7 @@ import { Text } from "../ui/text";
 import { Input } from "../ui/input";
 import { Link } from "expo-router";
 
-interface SignupFormProps {
+interface SigninFormProps {
 	email: string;
 	password: string;
 	setEmail: (email: string) => void;
@@ -18,38 +18,41 @@ interface SignupFormProps {
 	onSubmit?: () => void;
 }
 
-export const SignupForm = ({
+export const SigninForm = ({
 	email,
 	password,
 	setEmail,
 	setPassword,
 	onSubmit,
-}: SignupFormProps) => {
+}: SigninFormProps) => {
 	return (
 		<Card style={{ width: "100%", maxWidth: 350 }}>
 			<CardHeader>
-				<CardTitle>Create a Nurture Account</CardTitle>
+				<CardTitle>Login to Nurture</CardTitle>
 			</CardHeader>
 			<CardContent className="gap-4">
 				<Input
 					placeholder="Email"
 					keyboardType="email-address"
-					value={email}
+                    value={email}
 					onChangeText={setEmail}
 				/>
 				<Input
 					placeholder="Password"
 					secureTextEntry
-					value={password}
+                    value={password}
 					onChangeText={setPassword}
 				/>
 				<Button className="w-full text-primary-foreground" onPress={onSubmit}>
-					<Text>Sign Up</Text>
+					<Text>Sign In</Text>
 				</Button>
 			</CardContent>
 			<CardFooter className="flex-col items-stretch gap-2 w-full">
 				<Text className="text-center">
-					Already have an account? <Link href="/sign-in">Sign In</Link>
+					Don't have an account?{" "}
+					<Link href="/sign-up">
+						<Text className="text-primary">Sign Up</Text>
+					</Link>
 				</Text>
 			</CardFooter>
 		</Card>
