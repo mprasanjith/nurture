@@ -1,7 +1,13 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { useCallback } from "react";
 import { ApiClient } from "~/lib/api";
-import type { Plant, PlantInfo, PlantPhotoMatch, SearchResult } from "./types";
+import type {
+	Plant,
+	PlantInfo,
+	Reminder,
+	ReminderInput,
+	SearchResult,
+} from "./types";
 import useSWR, { mutate } from "swr";
 
 export class PlantsService {
@@ -52,6 +58,41 @@ export class PlantsService {
 				formData,
 			)
 		).data;
+	}
+
+	async addReminder(plantId: string, reminderData: ReminderInput) {
+		return (
+			await this.apiClient.post<{ data: Reminder }, ReminderInput>(
+				`/plants/${plantId}/reminders`,
+				reminderData,
+			)
+		).data;
+	}
+
+	async updateReminder(
+		plantId: string,
+		reminderId: string,
+		reminderData: ReminderInput,
+	) {
+		return (
+			await this.apiClient.put<{ data: Reminder }, ReminderInput>(
+				`/plants/${plantId}/reminders/${reminderId}`,
+				reminderData,
+			)
+		).data;
+	}
+
+	async deleteReminder(plantId: string, reminderId: string) {
+		return await this.apiClient.delete<{ message: string }>(
+			`/plants/${plantId}/reminders/${reminderId}`,
+		);
+	}
+
+	async markReminderAsCompleted(plantId: string, reminderId: string) {
+		return await this.apiClient.post<{ message: string }, null>(
+			`/plants/${plantId}/reminders/${reminderId}/complete`,
+			null,
+		);
 	}
 }
 

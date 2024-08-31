@@ -68,3 +68,15 @@ export interface PlantInfo {
 	thumbnail: string;
 	image: string;
 }
+
+export interface ReminderInput {
+	type: string;
+	frequency: number;
+}
+
+export interface Reminder extends ReminderInput {
+	id: string;
+	lastCompleted: string;
+	nextDue: string;
+	history: string[];
+}

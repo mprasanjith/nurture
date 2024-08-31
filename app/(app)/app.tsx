@@ -75,11 +75,12 @@ const PlantItem = ({ plant, onDelete }: PlantItemProps) => {
 							<View className="flex-1">
 								<Text className="font-bold text-lg">{plant.name}</Text>
 								<Text className="text-gray-500 text-sm">
-									{plant.info?.commonName}
+									{plant.info?.scientificNames?.join(", ")}
 								</Text>
 								{nextReminder ? (
 									<Text className="mt-2 text-sm">
-										Next reminder: {nextReminder.nextDue}
+										Next reminder:{" "}
+										{new Date(nextReminder.nextDue).toLocaleDateString()}
 									</Text>
 								) : null}
 							</View>
