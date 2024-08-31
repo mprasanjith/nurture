@@ -3,7 +3,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { type Theme, ThemeProvider } from "@react-navigation/native";
 import { SplashScreen, Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import * as React from "react";
 import { Platform } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/hooks/useColorScheme";
@@ -11,6 +10,7 @@ import "~/global.css";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { PortalHost } from "@rn-primitives/portal";
 import { tokenCache } from "~/lib/tokens";
+import { useEffect, useState } from "react";
 
 const LIGHT_THEME: Theme = {
 	dark: false,
@@ -30,9 +30,15 @@ const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export default function RootLayout() {
 	const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
-	const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+	const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
 
-	React.useEffect(() => {
+	// useEffect(() => {
+	// 	registerForPushNotificationsAsync().then((token) => {
+	// 		console.log(token);
+	// 	});
+	// }, []);
+
+	useEffect(() => {
 		(async () => {
 			const theme = await AsyncStorage.getItem("theme");
 
