@@ -57,8 +57,8 @@ const PlantItem = ({ plant, onDelete }: PlantItemProps) => {
 
 	return (
 		<View className="mb-4">
-			<Swipeable renderRightActions={renderRightActions}>
-				<Link href={`/plant/${plant._id}`} asChild>
+			<Link href={`/plant/${plant._id}`} asChild>
+				<Swipeable renderRightActions={renderRightActions}>
 					<Card>
 						<CardContent className="flex-row items-center p-4">
 							<Image
@@ -86,8 +86,8 @@ const PlantItem = ({ plant, onDelete }: PlantItemProps) => {
 							</View>
 						</CardContent>
 					</Card>
-				</Link>
-			</Swipeable>
+				</Swipeable>
+			</Link>
 		</View>
 	);
 };
@@ -154,15 +154,15 @@ const PlantsListScreen = () => {
 								<Text className="font-light text-xl">Welcome to Nurture</Text>
 							</View>
 							<View>
-								Add a plant to get started.
+								<Text>Add a plant to get started.</Text>
 								<Link href="/add-plant" asChild>
 									<Button
 										variant="default"
-										className="flex flex-row items-center gap-2 mt-4 px-12 py-6 text-background"
+										className="flex flex-row items-center gap-2 my-6 mt-4"
 										size="lg"
 									>
-										<Plus />
-										Add plant
+										<Plus className="text-primary-foreground" />
+										<Text>Add plant</Text>
 									</Button>
 								</Link>
 							</View>

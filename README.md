@@ -1,50 +1,47 @@
-# Welcome to your Expo app 👋
+# Nurture: Plant Detection and Care App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Nurture** is your personal plant care assistant, helping you identify, track, and care for your plants with ease.
 
-## Get started
+<img src="./images/home.jpeg" alt="drawing" width="200"/>
 
-1. Install dependencies
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+- **Plant Identification**: Snap a photo and let Nurture identify your plant.
+  
+  <img src="./images/identify.png" alt="drawing" width="200"/>
 
-   ```bash
-    npx expo start
-   ```
+- **Personalized Care Reminders**: Set custom reminders for watering, fertilizing, and more.
 
-In the output, you'll find options to open the app in a
+  <img src="./images/reminders.png" alt="drawing" width="200"/>
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **Comprehensive Plant Database**: Access detailed care instructions for a wide variety of plants.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+  <img src="./images/search.jpeg" alt="drawing" width="200"/>
 
-## Get a fresh project
+- **Plant Collection Management**: Keep track of all your plants in one place.
 
-When you're ready, run:
+  <img src="./images/home.jpeg" alt="drawing" width="200"/>
 
-```bash
-npm run reset-project
-```
+- **Search Functionality**: Easily find plants by name or characteristics.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+  <img src="./images/search-empty.jpeg" alt="drawing" width="200"/>
 
-## Learn more
+- **Care History Tracking**: Log and view your plant care activities over time.
 
-To learn more about developing your project with Expo, look at the following resources:
+- **Push Notifications**: Receive timely reminders for plant care tasks.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- **Cross-Platform Compatibility**: Available on both iOS and Android (untested) devices. (Also works on the web with React Native Web!)
 
-## Join the community
+## Technology Stack
 
-Join our community of developers creating universal apps.
+- Frontend: [React Native](https://reactnative.dev/) with [Expo](https://expo.dev)
+- Backend: [Hono](https://hono.dev/)
+- Database: [MongoDB Atlas](https://www.mongodb.com/atlas)
+- Authentication: [Clerk](https://clerk.com/)
+- Plant Identification: [PlantNet API](https://plantnet.org/)
+- Plant Data: [Perenual API](https://perenual.com/docs/api)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+Happy Planting! 🌱
